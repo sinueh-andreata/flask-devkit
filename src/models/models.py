@@ -5,11 +5,14 @@ from flask_security import UserMixin, RoleMixin
 from ..extensions import db, Security
 from argon2 import PasswordHasher
 
-roles_users = db.Table('roles_users',
-    db.Column('user_id', db.Integer(), db.ForeignKey('users.id')),
-    db.Column('role_id', db.Integer(), db.ForeignKey('roles.id'))
-)
-
+class RolesUsers(db.Model):
+    __tablename__ = 'roles_users'
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    role_id = db.Column(db.Integer(), db.ForeignKey('roles.id'))
+    
+roles_users = RolesUsers.__table__
+    
 class Role(db.Model, RoleMixin):
     __tablename__ = 'roles'
     id = db.Column(db.Integer(), primary_key=True)
@@ -18,7 +21,7 @@ class Role(db.Model, RoleMixin):
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
-    id = db.Column(db.Integer(), primary_key=True)
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean())
@@ -31,7 +34,7 @@ class User(db.Model, UserMixin):
 
 class Produto(db.Model):
     __tablename__ = 'produtos'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column(db.String(100), nullable=False)
     preco = db.Column(db.Float, nullable=False)
     estoque = db.Column(db.Integer, nullable=False)
