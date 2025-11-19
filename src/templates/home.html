@@ -215,11 +215,10 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const listarProdutos = document.getElementById('listarProdutos');
         const listaProdutos = document.getElementById('listaProdutos');
         const csrfToken = document.getElementById('csrf_token').value;
 
-        listarProdutos.addEventListener('click', async function(){
+        async function carregarProdutos() {
             try {
                 const response = await fetch('/products/listar', {
                     method: 'GET',
@@ -243,6 +242,9 @@
             } catch (error) {
                 console.error('Erro na requisição:', error);
             }
-        })})
+        }
+    carregarProdutos();
+});
+
 </script>
 </html>
