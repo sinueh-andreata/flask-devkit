@@ -50,3 +50,15 @@ def atualizar_produto(id):
     if not produto:
         return jsonify({'message': 'Produto não encontrado'}), 404
     return jsonify(schema.dump(produto)), 200
+
+@products_bp.route('/deletar/<int:id>', methods=['DELETE'])
+@login_required
+@roles_accepted('admin', 'user')
+def deletar_produto(id):
+    service = ProductsService(db.session, current_user)
+    produto = service.deletar_produto(id)
+    
+    if not produto:
+        return jsonify({'message': 'Produto não encontrado'}), 404
+    
+    return jsonify({'message': 'Produto deletado com sucesso'}), 200

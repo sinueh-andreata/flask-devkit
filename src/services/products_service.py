@@ -42,3 +42,20 @@ class ProductsService:
                 self.db_session.rollback()
                 raise e
         return produto
+    
+    def deletar_produto(self, id):
+        produto = self.db_session.query(Produto).filter_by(
+            id=id,
+            user_id=self.current_user.id
+        ).first()
+        
+        if not produto:
+            return None
+        
+        try:
+            self.db_session.delete(produto)
+            self.db_session.commit()
+            return produto
+        except Exception as e:
+            self.db_session.rollback()
+            raise e

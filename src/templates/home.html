@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <title>Document</title>
 </head>
 <body>
@@ -17,36 +18,77 @@
     </div>
 
     <br>
-
-    <form id="formProduto">
-        <input type="hidden" name="csrf_token" id="csrf_token" value="{{ csrf_token() }}">
-        <input type="text" name="nome" placeholder="Nome do Produto">
-        <input type="text" name="estoque" placeholder="Estoque do Produto">
-        <input type="number" name="preco" placeholder="Preço do Produto">
-        <button type="submit">Cadastrar Produto</button>
-    </form>
+        <form id="formProduto" class="border border-gray-900 m-6 px-5 py-5">
+            <input type="hidden" name="csrf_token" id="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" name="nome" placeholder="Nome do Produto">
+            <input type="text" name="estoque" placeholder="Estoque do Produto">
+            <input type="number" name="preco" placeholder="Preço do Produto">
+            <button type="submit">Cadastrar Produto</button>
+        </form>
+    
 
     <br>
 
-    <button id="listarProdutos">Listar Produtos</button>
-    <div id="listaProdutos"></div>
+    <button id="listarProdutos" class="border border-gray-900 m-6 px-5 py-5">Listar Produtos</button>
+    <div id="listaProdutos" class="border border-gray-900 m-6 px-5 py-5"></div>
 
 <br>
-
-    <input type="number" id="produtoId" placeholder="Digite o ID do produto">
-    <button id="buscarProduto">Buscar Produto</button>
-    <div id="produtoDetalhe"></div>
+    <div class="border border-gray-900 m-6 px-5 py-5">
+        <input type="number" id="produtoId" placeholder="Digite o ID do produto" class="border border-gray-900">
+        <button id="buscarProduto" class="border border-gray-900 rounded-lg p-2">Buscar Produto</button>
+        <div id="produtoDetalhe"></div>
+    </div>
 
     <br>
 
-    <input type="number" id="produtoId" placeholder="ID do produto">
-    <input type="text" id="novoNome" placeholder="Novo nome">
-    <input type="number" id="novoPreco" placeholder="Novo preço">
-    <input type="number" id="novoEstoque" placeholder="Novo estoque">
-    <button id="atualizarProduto">Atualizar Produto</button>
-    <div id="resultadoUpdate"></div>
+    <div class="border border-gray-900 m-6 px-5 py-5">
+        <input type="number" id="produtoId" placeholder="ID do produto" class="border border-gray-900">
+        <input type="text" id="novoNome" placeholder="Novo nome" class="border border-gray-900">
+        <input type="number" id="novoPreco" placeholder="Novo preço" class="border border-gray-900">
+        <input type="number" id="novoEstoque" placeholder="Novo estoque" class="border border-gray-900">
+        <button id="atualizarProduto">Atualizar Produto</button>
+        <div id="resultadoUpdate"></div>
+    </div>
 
+<br></br>
+
+    <div class="border border-gray-900 m-6 px-5 py-5">
+        <input type="number" id="produtoIdDelete" placeholder="ID do produto" class="border border-gray-900">
+        <button id="deletarProduto" class="border border-gray-900 rounded-lg p-2">Deletar Produto</button>
+        <div id="resultadoDelete"></div>
+    </div>
+    
 </body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const btnDelete = document.getElementById('deletarProduto');
+    const csrfToken = document.getElementById('csrf_token').value;
+
+    btnDelete.addEventListener('click', async function () {
+        const produtoId = document.getElementById('produtoIdDelete').value;
+
+        try {
+            const response = await fetch(`/products/deletar/${produtoId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                document.getElementById('resultadoDelete').innerText = result.mensagem;
+            } else {
+                document.getElementById('resultadoDelete').innerText = 'Erro ao deletar produto';
+            }
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+        }
+    });
+});
+
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -85,6 +127,28 @@
 </script>
 
 <script>
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.className = `
+            fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium
+            transition-all duration-500 transform
+            ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}
+            opacity-0 translate-y-3
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.remove('opacity-0', 'translate-y-3');
+            toast.classList.add('opacity-100', 'translate-y-0');
+        }, 50);
+        setTimeout(() => {
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'translate-y-3');
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+
+
     document.addEventListener('DOMContentLoaded', function() {
         const buscarProduto = document.getElementById('buscarProduto');
         const produtoIdInput = document.getElementById('produtoId');
@@ -106,13 +170,15 @@
                     const produto = await response.json();
                     produtoDetalhe.innerText = `Produto: ${produto.nome} - Estoque: ${produto.estoque} - Preço: R$ ${produto.preco}`;
                 } else {
-                    console.error('Erro ao buscar produto:', response.statusText);
+                    const erro = await response.json();
+                    showToast(erro.message || erro.mensagem || 'Erro ao buscar produto', 'error');
                 }
             } catch (error) {
                 console.error('Erro na requisição:', error);
             }
         })})
 </script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('formProduto');
@@ -146,6 +212,7 @@
                 }
             });}});
 </script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const listarProdutos = document.getElementById('listarProdutos');
