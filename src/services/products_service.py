@@ -23,3 +23,22 @@ class ProductsService:
     
     def listar_produto(self, id):
         return self.db_session.query(Produto).filter_by(id=id).first()
+    
+    def atualizar_produto(self, dados, id):
+        produto = self.db_session.query(Produto).filter_by(
+            id=id,
+            user_id=self.current_user.id
+        ).first()
+        
+        if not produto:
+            return None
+        
+        for key, value in dados.items():
+            setattr(produto, key, value)
+            
+            try:
+                self.db_session.commit()
+            except Exception as e:
+                self.db_session.rollback()
+                raise e
+        return produto

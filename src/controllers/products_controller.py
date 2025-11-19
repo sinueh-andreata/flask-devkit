@@ -37,3 +37,16 @@ def listar_produto(id):
 
     schema = ProdutoSchema()
     return jsonify(schema.dump(produto)), 200
+
+@products_bp.route('/atualizar/<int:id>', methods=['PUT'])
+@login_required
+@roles_accepted('admin', 'user')
+def atualizar_produto(id):
+    schema = ProdutoSchema()
+    dados = schema.load(request.get_json())
+    service = ProductsService(db.session, current_user)
+    produto = service.atualizar_produto(dados, id)
+    
+    if not produto:
+        return jsonify({'message': 'Produto não encontrado'}), 404
+    return jsonify(schema.dump(produto)), 200

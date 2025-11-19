@@ -16,6 +16,8 @@
         <p></p>
     </div>
 
+    <br>
+
     <form id="formProduto">
         <input type="hidden" name="csrf_token" id="csrf_token" value="{{ csrf_token() }}">
         <input type="text" name="nome" placeholder="Nome do Produto">
@@ -24,15 +26,63 @@
         <button type="submit">Cadastrar Produto</button>
     </form>
 
+    <br>
+
     <button id="listarProdutos">Listar Produtos</button>
     <div id="listaProdutos"></div>
+
+<br>
 
     <input type="number" id="produtoId" placeholder="Digite o ID do produto">
     <button id="buscarProduto">Buscar Produto</button>
     <div id="produtoDetalhe"></div>
 
+    <br>
+
+    <input type="number" id="produtoId" placeholder="ID do produto">
+    <input type="text" id="novoNome" placeholder="Novo nome">
+    <input type="number" id="novoPreco" placeholder="Novo preço">
+    <input type="number" id="novoEstoque" placeholder="Novo estoque">
+    <button id="atualizarProduto">Atualizar Produto</button>
+    <div id="resultadoUpdate"></div>
 
 </body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const btnUpdate = document.getElementById('atualizarProduto');
+    const csrfToken = document.getElementById('csrf_token').value;
+
+    btnUpdate.addEventListener('click', async function () {
+        const produtoId = document.getElementById('produtoId').value;
+        const data = {
+            nome: document.getElementById('novoNome').value,
+            preco: parseFloat(document.getElementById('novoPreco').value),
+            estoque: parseInt(document.getElementById('novoEstoque').value)
+        };
+
+        try {
+            const response = await fetch(`/products/atualizar/${produtoId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                const produto = await response.json();
+                document.getElementById('resultadoUpdate').innerText =
+                    `Produto atualizado: ${produto.nome} - Estoque: ${produto.estoque} - R$ ${produto.preco}`;
+            } else {
+                document.getElementById('resultadoUpdate').innerText = 'Erro ao atualizar produto';
+            }
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+        }});});
+
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -53,7 +103,6 @@
                 });
 
                 if (response.ok) {
-                    console.log(response)
                     const produto = await response.json();
                     produtoDetalhe.innerText = `Produto: ${produto.nome} - Estoque: ${produto.estoque} - Preço: R$ ${produto.preco}`;
                 } else {
