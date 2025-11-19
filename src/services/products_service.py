@@ -1,4 +1,4 @@
-from models import Produto
+from src.models.models import Produto
 
 class ProductsService:
     def __init__(self, db_session, current_user):

@@ -5,6 +5,7 @@ from .models.models import create_default_roles, create_default_users
 from src.auth.datastore import user_datastore  
 from src.auth import init_app as init_auth
 from src.routes.routes import routes_bp
+from controllers.products_controller import products_bp
 
 from .auth import auth
 
@@ -28,6 +29,7 @@ def create_app(config_class=ConfigDev):
 
     # importando rotas 
     app.register_blueprint(routes_bp)
+    app.register_blueprint(products_bp)
 
     # Cria todas as tabelas do banco de dados automaticamente
     with app.app_context():

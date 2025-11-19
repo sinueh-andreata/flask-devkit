@@ -2,7 +2,7 @@ from datetime import datetime
 import uuid
 from flask_security.utils import hash_password
 from flask_security import UserMixin, RoleMixin
-from ..extensions import db, Security
+from src.extensions import db, Security
 from argon2 import PasswordHasher
 
 class RolesUsers(db.Model):
@@ -39,6 +39,9 @@ class Produto(db.Model):
     preco = db.Column(db.Float, nullable=False)
     estoque = db.Column(db.Integer, nullable=False)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
+    
+    user = db.relationship('User', backref=db.backref('produtos', lazy=True))
 
     def __repr__(self):
         return f'<Produto {self.nome}>'
