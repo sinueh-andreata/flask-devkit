@@ -39,8 +39,9 @@ class Produto(db.Model):
     preco = db.Column(db.Float, nullable=False)
     estoque = db.Column(db.Integer, nullable=False)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
-    
+    atualizado_em = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))     
     user = db.relationship('User', backref=db.backref('produtos', lazy=True))
 
     def __repr__(self):

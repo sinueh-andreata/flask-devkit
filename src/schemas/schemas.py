@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validate
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
