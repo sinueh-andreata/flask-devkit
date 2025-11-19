@@ -12,7 +12,7 @@ products_bp = Blueprint('products', __name__, url_prefix='/products')
 @roles_accepted('admin', 'user')
 def cadastrar_produto():
     schema = ProdutoSchema()
-    dados = schema.load(request.form)
+    dados = schema.load(request.get_json())
     service = ProductsService(db.session, current_user)
     produto = service.salvar_produto(dados)
     return jsonify(schema.dump(produto)), 201

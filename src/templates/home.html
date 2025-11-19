@@ -41,15 +41,15 @@
                     const response = await fetch('/products/cadastrar', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Content-Type': 'application/json',
                             'X-CSRFToken': csrfToken
                         },
-                        body: new URLSearchParams(data)
+                        body: JSON.stringify(data)
                     });
 
                     if (response.ok) {
                         const produto = await response.json();
-                        document.querySelector('.produto p').innerText = `Produto Cadastrado: ${produto.nome} - ${produto.descricao} - R$ ${produto.preco}`;
+                        document.querySelector('.produto p').innerText = `Produto Cadastrado: ${produto.nome} - ${produto.estoque} - R$ ${produto.preco}`;
                     } else {
                         console.error('Erro ao cadastrar produto:', response.statusText);
                     }
