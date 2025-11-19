@@ -27,7 +27,43 @@
     <button id="listarProdutos">Listar Produtos</button>
     <div id="listaProdutos"></div>
 
+    <input type="number" id="produtoId" placeholder="Digite o ID do produto">
+    <button id="buscarProduto">Buscar Produto</button>
+    <div id="produtoDetalhe"></div>
+
+
 </body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const buscarProduto = document.getElementById('buscarProduto');
+        const produtoIdInput = document.getElementById('produtoId');
+        const produtoDetalhe = document.getElementById('produtoDetalhe');
+        const csrfToken = document.getElementById('csrf_token').value;
+
+        buscarProduto.addEventListener('click', async function(){
+            const produtoId = produtoIdInput.value;
+
+            try {
+                const response = await fetch(`/products/listar/${produtoId}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    }
+                });
+
+                if (response.ok) {
+                    console.log(response)
+                    const produto = await response.json();
+                    produtoDetalhe.innerText = `Produto: ${produto.nome} - Estoque: ${produto.estoque} - Preço: R$ ${produto.preco}`;
+                } else {
+                    console.error('Erro ao buscar produto:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+            }
+        })})
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('formProduto');

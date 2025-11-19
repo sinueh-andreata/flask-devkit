@@ -20,3 +20,6 @@ class ProductsService:
         
     def listar_produtos(self):
         return Produto.query.all()
+    
+    def listar_produto(self, id):
+        return self.db_session.query(Produto).filter_by(id=id).first()

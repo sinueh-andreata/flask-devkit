@@ -25,3 +25,15 @@ def listar_produtos():
     produtos = service.listar_produtos()
     schema = ProdutoSchema(many=True)
     return jsonify(schema.dump(produtos)), 200
+
+@products_bp.route('/listar/<int:id>', methods=['GET'])
+@login_required
+@roles_accepted('admin', 'user')
+def listar_produto(id):
+    service = ProductsService(db.session, current_user)
+    produto = service.listar_produto(id)
+    if not produto:
+        return jsonify({'message': 'Produto não encontrado'}), 404
+
+    schema = ProdutoSchema()
+    return jsonify(schema.dump(produto)), 200
