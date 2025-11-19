@@ -17,3 +17,6 @@ class ProductsService:
         except Exception as e:
             self.db_session.rollback()
             raise e
+        
+    def listar_produtos(self):
+        return Produto.query.all()
