@@ -10,6 +10,10 @@ class ProductsService:
 
     def salvar_produto(self, dados):
         produto = self.criar_produto(dados)
-        self.db_session.add(produto)
-        self.db_session.commit()
-        return produto
+        try:
+            self.db_session.add(produto)
+            self.db_session.commit()
+            return produto
+        except Exception as e:
+            self.db_session.rollback()
+            raise e
