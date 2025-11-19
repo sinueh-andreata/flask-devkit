@@ -127,28 +127,6 @@
 </script>
 
 <script>
-    function showToast(message, type = 'success') {
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.className = `
-            fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium
-            transition-all duration-500 transform
-            ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}
-            opacity-0 translate-y-3
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.classList.remove('opacity-0', 'translate-y-3');
-            toast.classList.add('opacity-100', 'translate-y-0');
-        }, 50);
-        setTimeout(() => {
-            toast.classList.remove('opacity-100', 'translate-y-0');
-            toast.classList.add('opacity-0', 'translate-y-3');
-            setTimeout(() => toast.remove(), 500);
-        }, 3000);
-    }
-
-
     document.addEventListener('DOMContentLoaded', function() {
         const buscarProduto = document.getElementById('buscarProduto');
         const produtoIdInput = document.getElementById('produtoId');
@@ -179,39 +157,7 @@
         })})
 </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('formProduto');
-        const csrfToken = document.getElementById('csrf_token').value;
-
-        if (form) {
-            form.addEventListener('submit', async function (e){
-                e.preventDefault();
-
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
-
-                try {
-                    const response = await fetch('/products/cadastrar', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': csrfToken
-                        },
-                        body: JSON.stringify(data)
-                    });
-
-                    if (response.ok) {
-                        const produto = await response.json();
-                        document.querySelector('.produto p').innerText = `Produto Cadastrado: ${produto.nome} - ${produto.estoque} - R$ ${produto.preco}`;
-                    } else {
-                        console.error('Erro ao cadastrar produto:', response.statusText);
-                    }
-                } catch (error) {
-                    console.error('Erro na requisição:', error);
-                }
-            });}});
-</script>
+<script type="module" src="{{url_for('static', filename='js/pages/products.js')}}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
