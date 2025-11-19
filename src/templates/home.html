@@ -24,6 +24,9 @@
         <button type="submit">Cadastrar Produto</button>
     </form>
 
+    <button id="listarProdutos">Listar Produtos</button>
+    <div id="listaProdutos"></div>
+
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -57,5 +60,37 @@
                     console.error('Erro na requisição:', error);
                 }
             });}});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const listarProdutos = document.getElementById('listarProdutos');
+        const listaProdutos = document.getElementById('listaProdutos');
+        const csrfToken = document.getElementById('csrf_token').value;
+
+        listarProdutos.addEventListener('click', async function(){
+            try {
+                const response = await fetch('/products/listar', {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    }
+                });
+
+                if (response.ok) {
+                    const produtos = await response.json();
+                    listaProdutos.innerHTML = '';
+
+                    produtos.forEach(produto => {
+                        const produtoDiv = document.createElement('div');
+                        produtoDiv.innerText = `Produto: ${produto.nome} - Estoque: ${produto.estoque} - Preço: R$ ${produto.preco}`;
+                        listaProdutos.appendChild(produtoDiv);
+                    });
+                } else {
+                    console.error('Erro ao listar produtos:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+            }
+        })})
 </script>
 </html>

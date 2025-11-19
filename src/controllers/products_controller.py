@@ -16,3 +16,12 @@ def cadastrar_produto():
     service = ProductsService(db.session, current_user)
     produto = service.salvar_produto(dados)
     return jsonify(schema.dump(produto)), 201
+
+@products_bp.route('/listar', methods=['GET'])
+@login_required
+@roles_accepted('admin', 'user')
+def listar_produtos():
+    service = ProductsService(db.session, current_user)
+    produtos = service.listar_produtos()
+    schema = ProdutoSchema(many=True)
+    return jsonify(schema.dump(produtos)), 200
