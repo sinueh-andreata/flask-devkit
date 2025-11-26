@@ -14,7 +14,7 @@ app = create_app()
 
 with app.app_context():
     if not user_datastore.find_role("admin"):
-        user_datastore.create_role(name="admin", description="Administrador")
+        user_datastore.create_role(name="admin", description="Administrator")
         db.session.commit()
 
     email = "adminrs@admin.com"

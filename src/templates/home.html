@@ -13,48 +13,48 @@
     <a href="/login">Login</a>
     <a href="/logout">Logout</a>
 
-    <div class="produto">
+    <div class="product">
         <p></p>
     </div>
 
     <br>
-        <form id="formProduto" class="border border-gray-900 m-6 px-5 py-5">
+        <form id="formProduct" class="border border-gray-900 m-6 px-5 py-5">
             <input type="hidden" name="csrf_token" id="csrf_token" value="{{ csrf_token() }}">
-            <input type="text" name="nome" placeholder="Nome do Produto">
-            <input type="text" name="estoque" placeholder="Estoque do Produto">
-            <input type="number" name="preco" placeholder="Preço do Produto">
-            <button type="submit">Cadastrar Produto</button>
+            <input type="text" name="nome" placeholder="Nome do Product">
+            <input type="text" name="estoque" placeholder="Estoque do Product">
+            <input type="number" name="preco" placeholder="Preço do Product">
+            <button type="submit">Cadastrar Product</button>
         </form>
     
 
     <br>
 
-    <button id="listarProdutos" class="border border-gray-900 m-6 px-5 py-5">Listar Produtos</button>
-    <div id="listaProdutos" class="border border-gray-900 m-6 px-5 py-5"></div>
+    <button id="listProducts" class="border border-gray-900 m-6 px-5 py-5">List Products</button>
+    <div id="listaProducts" class="border border-gray-900 m-6 px-5 py-5"></div>
 
 <br>
     <div class="border border-gray-900 m-6 px-5 py-5">
-        <input type="number" id="produtoId" placeholder="Digite o ID do produto" class="border border-gray-900">
-        <button id="buscarProduto" class="border border-gray-900 rounded-lg p-2">Buscar Produto</button>
-        <div id="produtoDetalhe"></div>
+        <input type="number" id="productId" placeholder="Digite o ID do product" class="border border-gray-900">
+        <button id="getProduct" class="border border-gray-900 rounded-lg p-2">Buscar Product</button>
+        <div id="productDetalhe"></div>
     </div>
 
     <br>
 
     <div class="border border-gray-900 m-6 px-5 py-5">
-        <input type="number" id="produtoId" placeholder="ID do produto" class="border border-gray-900">
+        <input type="number" id="productId" placeholder="ID do product" class="border border-gray-900">
         <input type="text" id="novoNome" placeholder="Novo nome" class="border border-gray-900">
         <input type="number" id="novoPreco" placeholder="Novo preço" class="border border-gray-900">
         <input type="number" id="novoEstoque" placeholder="Novo estoque" class="border border-gray-900">
-        <button id="atualizarProduto">Atualizar Produto</button>
+        <button id="updateProduct">Update Product</button>
         <div id="resultadoUpdate"></div>
     </div>
 
 <br></br>
 
     <div class="border border-gray-900 m-6 px-5 py-5">
-        <input type="number" id="produtoIdDelete" placeholder="ID do produto" class="border border-gray-900">
-        <button id="deletarProduto" class="border border-gray-900 rounded-lg p-2">Deletar Produto</button>
+        <input type="number" id="productIdDelete" placeholder="ID do product" class="border border-gray-900">
+        <button id="deleteProduct" class="border border-gray-900 rounded-lg p-2">delete Product</button>
         <div id="resultadoDelete"></div>
     </div>
     
@@ -62,14 +62,14 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-    const btnDelete = document.getElementById('deletarProduto');
+    const btnDelete = document.getElementById('deleteProduct');
     const csrfToken = document.getElementById('csrf_token').value;
 
     btnDelete.addEventListener('click', async function () {
-        const produtoId = document.getElementById('produtoIdDelete').value;
+        const productId = document.getElementById('productIdDelete').value;
 
         try {
-            const response = await fetch(`/products/deletar/${produtoId}`, {
+            const response = await fetch(`/products/delete/${productId}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRFToken': csrfToken
@@ -80,7 +80,7 @@
                 const result = await response.json();
                 document.getElementById('resultadoDelete').innerText = result.mensagem;
             } else {
-                document.getElementById('resultadoDelete').innerText = 'Erro ao deletar produto';
+                document.getElementById('resultadoDelete').innerText = 'Erro ao delete product';
             }
         } catch (error) {
             console.error('Erro na requisição:', error);
@@ -92,11 +92,11 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-    const btnUpdate = document.getElementById('atualizarProduto');
+    const btnUpdate = document.getElementById('updateProduct');
     const csrfToken = document.getElementById('csrf_token').value;
 
     btnUpdate.addEventListener('click', async function () {
-        const produtoId = document.getElementById('produtoId').value;
+        const productId = document.getElementById('productId').value;
         const data = {
             nome: document.getElementById('novoNome').value,
             preco: parseFloat(document.getElementById('novoPreco').value),
@@ -104,7 +104,7 @@
         };
 
         try {
-            const response = await fetch(`/products/atualizar/${produtoId}`, {
+            const response = await fetch(`/products/update/${productId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,11 +114,11 @@
             });
 
             if (response.ok) {
-                const produto = await response.json();
+                const product = await response.json();
                 document.getElementById('resultadoUpdate').innerText =
-                    `Produto atualizado: ${produto.nome} - Estoque: ${produto.estoque} - R$ ${produto.preco}`;
+                    `Product atualizado: ${product.nome} - Estoque: ${product.estoque} - R$ ${product.preco}`;
             } else {
-                document.getElementById('resultadoUpdate').innerText = 'Erro ao atualizar produto';
+                document.getElementById('resultadoUpdate').innerText = 'Erro ao update product';
             }
         } catch (error) {
             console.error('Erro na requisição:', error);
@@ -128,16 +128,16 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const buscarProduto = document.getElementById('buscarProduto');
-        const produtoIdInput = document.getElementById('produtoId');
-        const produtoDetalhe = document.getElementById('produtoDetalhe');
+        const getProduct = document.getElementById('getProduct');
+        const productIdInput = document.getElementById('productId');
+        const productDetalhe = document.getElementById('productDetalhe');
         const csrfToken = document.getElementById('csrf_token').value;
 
-        buscarProduto.addEventListener('click', async function(){
-            const produtoId = produtoIdInput.value;
+        getProduct.addEventListener('click', async function(){
+            const productId = productIdInput.value;
 
             try {
-                const response = await fetch(`/products/listar/${produtoId}`, {
+                const response = await fetch(`/products/list/${productId}`, {
                     method: 'GET',
                     headers: {
                         'X-CSRFToken': csrfToken
@@ -145,11 +145,11 @@
                 });
 
                 if (response.ok) {
-                    const produto = await response.json();
-                    produtoDetalhe.innerText = `Produto: ${produto.nome} - Estoque: ${produto.estoque} - Preço: R$ ${produto.preco}`;
+                    const product = await response.json();
+                    productDetalhe.innerText = `Product: ${product.nome} - Estoque: ${product.estoque} - Preço: R$ ${product.preco}`;
                 } else {
                     const erro = await response.json();
-                    showToast(erro.message || erro.mensagem || 'Erro ao buscar produto', 'error');
+                    showToast(erro.message || erro.mensagem || 'Erro ao get product', 'error');
                 }
             } catch (error) {
                 console.error('Erro na requisição:', error);
@@ -161,12 +161,12 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const listaProdutos = document.getElementById('listaProdutos');
+        const listaProducts = document.getElementById('listaProducts');
         const csrfToken = document.getElementById('csrf_token').value;
 
-        async function carregarProdutos() {
+        async function carregarProducts() {
             try {
-                const response = await fetch('/products/listar', {
+                const response = await fetch('/products/list', {
                     method: 'GET',
                     headers: {
                         'X-CSRFToken': csrfToken
@@ -174,22 +174,22 @@
                 });
 
                 if (response.ok) {
-                    const produtos = await response.json();
-                    listaProdutos.innerHTML = '';
+                    const products = await response.json();
+                    listaProducts.innerHTML = '';
 
-                    produtos.forEach(produto => {
-                        const produtoDiv = document.createElement('div');
-                        produtoDiv.innerText = `Produto: ${produto.nome} - Estoque: ${produto.estoque} - Preço: R$ ${produto.preco}`;
-                        listaProdutos.appendChild(produtoDiv);
+                    products.forEach(product => {
+                        const productDiv = document.createElement('div');
+                        productDiv.innerText = `Product: ${product.nome} - Estoque: ${product.estoque} - Preço: R$ ${product.preco}`;
+                        listaProducts.appendChild(productDiv);
                     });
                 } else {
-                    console.error('Erro ao listar produtos:', response.statusText);
+                    console.error('Erro ao list products:', response.statusText);
                 }
             } catch (error) {
                 console.error('Erro na requisição:', error);
             }
         }
-    carregarProdutos();
+    carregarProducts();
 });
 
 </script>

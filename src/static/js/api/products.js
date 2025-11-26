@@ -2,12 +2,12 @@ import { showToast } from '../utils/toast.js';
 import { showError } from '../utils/errors.js';
 import { postData } from '../utils/fetchUtils.js';
 
-export async function criarProduto(produto, csrfToken) {
+export async function createProduct(product, csrfToken) {
     try {
-        const data = await postData('/products/cadastrar', produto, {
+        const data = await postData('/products/cadastrar', product, {
             'X-CSRFToken': csrfToken
         });
-        showToast('Produto criado com sucesso!', 'success');
+        showToast('Product criado com sucesso!', 'success');
         return data;
     } catch (error) {
         showError(error);

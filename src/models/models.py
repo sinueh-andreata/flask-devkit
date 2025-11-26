@@ -31,9 +31,8 @@ class User(db.Model, UserMixin):
 
     roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
-
-class Produto(db.Model):
-    __tablename__ = 'produtos'
+class Product(db.Model):
+    __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column(db.String(100), nullable=False)
     preco = db.Column(db.Float, nullable=False)
@@ -42,18 +41,7 @@ class Produto(db.Model):
     atualizado_em = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))     
-    user = db.relationship('User', backref=db.backref('produtos', lazy=True))
-
-    def __repr__(self):
-        return f'<Produto {self.nome}>'
-    
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'nome': self.nome,
-            'preco': self.preco,
-            'estoque': self.estoque
-        }
+    user = db.relationship('User', backref=db.backref('products', lazy=True))
 
 def create_default_roles():
     default_roles = ['admin', 'user', 'root']

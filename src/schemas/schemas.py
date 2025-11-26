@@ -1,10 +1,6 @@
 from marshmallow import Schema, fields, validate
 
-class UserSchema(Schema):
-    id = fields.Int(dump_only=True)
-    email = fields.Email(required=True)
-    
-class ProdutoSchema(Schema):
+class ProductSchema(Schema):
     class Meta:
         unknown = 'EXCLUDE'
         
