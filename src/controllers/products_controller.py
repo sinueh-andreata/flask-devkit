@@ -35,7 +35,7 @@ def list_all_products():
 @roles_accepted('admin', 'user')
 def list_product(id):
     service = ProductsService(db.session, current_user)
-    product = service.list_product(id)
+    product = service.get_product(id)
     if not product:
         return jsonify({'message': 'Product não encontrado'}), 404
 
