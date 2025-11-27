@@ -14,10 +14,16 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 @roles_accepted('admin', 'user')
 def create_product():
     schema = ProductSchema()
+    service = ProductsService(db.session, current_user)
     try:
         dados = schema.load(request.get_json())
-        service = ProductsService(db.session, current_user)
         product = service.save_product(dados)
         return jsonify(schema.dump(product)), 201
+    except ValidationError as err:
+        return jsonify({"errors": err.messages}), 400
+    except IntegrityError:
+        return jsonify({"error": "Produto já existe ou violação de integridade"}), 400
+    except RuntimeError as err:
+        return jsonify({"error": str(err)}), 500
     except Exception as err:
-        return jsonify({"error": 'erro interno do servidor'}), 500
+        return jsonify({"error": "Erro interno do servidor"}), 500

@@ -30,7 +30,7 @@ def list_all_products():
     schema = ProductSchema(many=True)
     return jsonify(schema.dump(products)), 200
 
-@products_bp.route('/list/<int:id>', methods=['GET'])
+@products_bp.route('/<int:id>', methods=['GET'])
 @login_required
 @roles_accepted('admin', 'user')
 def list_product(id):

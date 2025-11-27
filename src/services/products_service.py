@@ -2,67 +2,70 @@ from src.models.models import Product
 from flask import jsonify
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
 
 class ProductsService:
     def __init__(self, db_session, current_user):
         self.db_session = db_session
         self.current_user = current_user
-    
-    def create_product(self, dados):
+
+    def instace_product(self, dados):
         return Product(**dados, user_id=self.current_user.id)
 
     def save_product(self, dados):
-        product = self.create_product(dados)
+        product = self.instace_product(dados)
         try:
             self.db_session.add(product)
             self.db_session.commit()
             return product
-        except ValidationError as err:
-            return jsonify({"errors": err.messages}), 400
-        except IntegrityError as err:
+
+        except IntegrityError:
             self.db_session.rollback()
-            return jsonify({"error": "Erro de integridade ao cadastrar o product."}), 409
-        except Exception as err:
-            return jsonify({"error": 'erro interno do servidor'}), 500
-        
+            raise IntegrityError("Produto duplicado ou violação de integridade.")
+
+        except SQLAlchemyError as e:
+            self.db_session.rollback()
+            raise RuntimeError("Erro interno ao salvar o produto.") from e
+
     def list_all_products(self):
-        return Product.query.all()
-    
+        return self.db_session.query(Product).filter_by(
+            user_id=self.current_user.id
+        ).all()
+
     def get_product(self, id):
-        return self.db_session.query(Product).filter_by(id=id).first()
-    
-    def update_product(self, dados, id):
-        product = self.db_session.query(Product).filter_by(
+        return self.db_session.query(Product).filter_by(
             id=id,
             user_id=self.current_user.id
         ).first()
-        
+
+    def update_product(self, dados, id):
+        product = self.get_product(id)
+
         if not product:
             return None
-        
-        for key, value in dados.items():
-            setattr(product, key, value)
-            
+
+        for campo, valor in dados.items():
+            setattr(product, campo, valor)
+
         try:
             self.db_session.commit()
-        except Exception as e:
+            return product
+
+        except SQLAlchemyError as e:
             self.db_session.rollback()
-            raise e
-        return product
-    
+            raise RuntimeError("Erro ao atualizar produto.") from e
+
     def delete_product(self, id):
-        product = self.db_session.query(Product).filter_by(
-            id=id,
-            user_id=self.current_user.id
-        ).first()
-        
+        product = self.get_product(id)
+
         if not product:
             return None
-        
+
         try:
             self.db_session.delete(product)
             self.db_session.commit()
             return product
-        except Exception as e:
+
+        except SQLAlchemyError as e:
             self.db_session.rollback()
-            raise e
+            raise RuntimeError("Erro ao excluir produto.") from e
