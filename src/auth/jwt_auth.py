@@ -1,22 +1,20 @@
-from flask_jwt_extended import create_access_token
-from flask import Blueprint, request
+from flask_jwt_extended import create_access_token, verify_jwt_in_request, get_jwt
+from flask import Blueprint, request, jsonify
 from src.models.models import User
-from flask_jwt_extended import verify_jwt_in_request, get_jwt
 from functools import wraps
-from flask import jsonify
+from src.extensions import csrf
 
-jwt_bp = Blueprint("auth", __name__, url_prefix="/auth")
+jwt_bp = Blueprint("jwt", __name__, url_prefix="/auth")
 
 def roles_required(*required_roles):
     def wrapper(fn):
         @wraps(fn)
         def decorator(*args, **kwargs):
-            verify_jwt_in_request()  # valida o token
+            verify_jwt_in_request()
 
             claims = get_jwt()
             user_roles = claims.get("roles", [])
 
-            # aceita se o usuário tiver pelo menos UMA role exigida
             if not any(role in user_roles for role in required_roles):
                 return jsonify(msg="Acesso negado"), 403
 
@@ -24,17 +22,25 @@ def roles_required(*required_roles):
         return decorator
     return wrapper
 
-@jwt_bp.route("/login", methods=["POST"])
+@jwt_bp.route("/jwt/login", methods=["POST"])
+@csrf.exempt
 def login():
     user = User.query.filter_by(email=request.json["email"]).first()
     if not user or not user.check_password(request.json["password"]):
         return {"msg": "credenciais inválidas"}, 401
 
-    roles = [role.name for role in user.roles]  # vem do banco
+    roles = [role.name for role in user.roles]
 
     access_token = create_access_token(
-        identity=user.id,
-        additional_claims={"roles": roles}  # << ESSENCIAL
+        identity=str(user.id),  # << CONVERTA PARA STRING
+        additional_claims={"roles": roles}
     )
 
     return {"access_token": access_token}
+
+
+@jwt_bp.route("/admin/panel", methods=["GET"])
+@csrf.exempt
+@roles_required("admin")
+def admin_panel():
+    return jsonify({"msg": "Painel do administrador"})

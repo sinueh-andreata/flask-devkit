@@ -1,8 +1,8 @@
 from datetime import datetime
 import uuid
-from flask_security.utils import hash_password
+from flask_security.utils import hash_password, verify_password
 from flask_security import UserMixin, RoleMixin
-from src.extensions import db, Security
+from src.extensions import db
 from argon2 import PasswordHasher
 
 class RolesUsers(db.Model):
@@ -30,6 +30,9 @@ class User(db.Model, UserMixin):
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
 
     roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
+        
+    def check_password(self, password):
+        return verify_password(password, self.password)
 
 class Product(db.Model):
     __tablename__ = 'products'

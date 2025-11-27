@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: flask_app_dev # nome do contêiner
+    container_name: flask_devkit # nome do contêiner
     restart: unless-stopped
     ports:
       - "8888:8888"

@@ -15,3 +15,7 @@ def index():
 @login_required
 def home():
     return render_template('home.html')
+
+@routes_bp.route("/jwt_login")
+def jwt_login():
+    return render_template('jwt_login.html')
