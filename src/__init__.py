@@ -1,6 +1,6 @@
 from flask import Flask
 from .config import ConfigDev
-from .extensions import db, csrf, security, ma, cors, limiter
+from .extensions import db, csrf, security, ma, cors, limiter, jwt
 from .models.models import create_default_roles, create_default_users
 from src.auth.datastore import user_datastore  
 from src.auth import init_app as init_auth
@@ -20,6 +20,7 @@ def create_app(config_class=ConfigDev):
     ma.init_app(app)
     cors.init_app(app)
     limiter.init_app(app)
+    jwt.init_app(app)
     
     # configuração do Flask-Security
     security.init_app(app, user_datastore)

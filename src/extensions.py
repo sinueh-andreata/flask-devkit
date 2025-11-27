@@ -5,7 +5,9 @@ from flask_limiter.util import get_remote_address
 from flask_security import Security
 from flask_marshmallow import Marshmallow
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 
+jwt = JWTManager()
 db = SQLAlchemy()
 csrf = CSRFProtect()
 security = Security()
