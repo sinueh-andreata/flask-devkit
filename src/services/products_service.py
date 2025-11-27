@@ -9,11 +9,11 @@ class ProductsService:
         self.db_session = db_session
         self.current_user = current_user
 
-    def instace_product(self, dados):
-        return Product(**dados, user_id=self.current_user.id)
+    def instace_product(self, data):
+        return Product(**data, user_id=self.current_user.id)
 
-    def save_product(self, dados):
-        product = self.instace_product(dados)
+    def save_product(self, data):
+        product = self.instace_product(data)
         try:
             self.db_session.add(product)
             self.db_session.commit()
@@ -38,13 +38,13 @@ class ProductsService:
             user_id=self.current_user.id
         ).first()
 
-    def update_product(self, dados, id):
+    def update_product(self, data, id):
         product = self.get_product(id)
 
         if not product:
             return None
 
-        for campo, valor in dados.items():
+        for campo, valor in data.items():
             setattr(product, campo, valor)
 
         try:

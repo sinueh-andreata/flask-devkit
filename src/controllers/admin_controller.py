@@ -13,12 +13,12 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 @login_required
 @roles_accepted('admin', 'user')
 def create_product():
-    schema = ProductSchema()
-    service = ProductsService(db.session, current_user)
+    schema = ProductSchema()  # cria uma instância do schema responsável por validar e serializar os dados do produto
+    service = ProductsService(db.session, current_user)  # cria o serviço de produtos, passando a sessão do banco e o usuário logado
     try:
-        dados = schema.load(request.get_json())
-        product = service.save_product(dados)
-        return jsonify(schema.dump(product)), 201
+        data = schema.load(request.get_json()) # serializo os dados com o schema e carrego os dados requisitanto o json
+        product = service.save_product(data) # produto é salvo com o service instanciado e salvo o produto com o método passando a data
+        return jsonify(schema.dump(product)), 201 # retorno o produto serializado para JSON com o schema e status 201
     except ValidationError as err:
         return jsonify({"errors": err.messages}), 400
     except IntegrityError:
