@@ -27,3 +27,23 @@ def create_product():
         return jsonify({"error": str(err)}), 500
     except Exception as err:
         return jsonify({"error": "Erro interno do servidor"}), 500
+
+@admin_bp.route('/update/products', methods=["PUT"])
+@login_required
+@roles_accepted('admin', 'root')
+def alter_product():
+    schema = ProductSchema()
+    service = ProductsService(db.session, current_user)
+    try:
+        data = schema.load(request.get_json())
+        alter_product = service.update_product(data)
+        return jsonify(schema.dump(alter_product)), 201
+    except ValidationError as err:
+        return jsonify({"errors": err.messages}), 400
+    except IntegrityError:
+        return jsonify({"error": "Violação de integridade"}), 400
+    except RuntimeError as err:
+        return jsonify({"error": str(err)}), 500
+    except Exception as err:
+        return jsonify({"error": "Erro interno do servidor"}), 500
+
